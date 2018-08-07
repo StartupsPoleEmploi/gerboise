@@ -1,0 +1,51 @@
+version: "3"
+services:
+
+  fluentbit-cpu:
+    image: fluent/fluent-bit:latest
+    restart: unless-stopped
+    command: > 
+      /fluent-bit/bin/fluent-bit
+      -i cpu
+      -o es
+      -p Logstash_Format=On
+      -p Logstash_Prefix=cpu
+      -p Host=__ES_HOST__
+      -p Port=93__ID__
+      -p HTTP_User=__APP__
+      -p HTTP_Passwd=${ES_PASSWORD}
+
+  fluentbit-memory:
+    image: fluent/fluent-bit:latest
+    restart: unless-stopped
+    command: > 
+      /fluent-bit/bin/fluent-bit
+      -i mem
+      -o es
+      -p Logstash_Format=On
+      -p Logstash_Prefix=memory
+      -p Host=__ES_HOST__
+      -p Port=93__ID__
+      -p HTTP_User=__APP__
+      -p HTTP_Passwd=${ES_PASSWORD}
+
+  fluentbit-access:
+    image: fluent/fluent-bit:latest
+    restart: unless-stopped
+    command: > 
+      /fluent-bit/bin/fluent-bit
+      -i tail
+      --parser=/fluent-bit/etc/parsers.conf
+      -p Parser=nginx
+      -p path=/data/log/access.log
+      -p DB=/data/etc/logs.db
+      -o es
+      -p Logstash_Format=On
+      -p Logstash_Prefix=access
+      -p Host=__ES_HOST__
+      -p Port=93__ID__
+      -p HTTP_User=__APP__
+      -p HTTP_Passwd=${ES_PASSWORD}
+    volumes:
+      - "/var/log/nginx/:/data/log"
+      - "./data:/data/etc"
