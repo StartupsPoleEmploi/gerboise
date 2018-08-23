@@ -22,7 +22,15 @@ Generate configuration files for your application:
 
 The application ID will be used to generate ports for all services. Thus, it needs to be unique to this application.
 
-The configuration files will then be located in apps/myapp. You can now run Nginx, Elasticsearch and Kibana with:
+The configuration files will then be located in apps/myapp. 
+
+Before starting elasticsearch, configure the system variable 'virtual memory maximum' with :
+`sudo sysctl -w vm.max_map_count=262144` (temporary)
+or add to configuration file /etc/sysctl.conf this : `vm.max_map_count=262144` (persistent)
+
+Elasticsearch needs specifics access rights on directory myapp/data/elasticsearch/, execute this : chmod a+rwx data/elasticsearch
+
+You can now run Nginx, Elasticsearch and Kibana with:
 
     cd apps/myapp
     docker-compose up
